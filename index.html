@@ -64,10 +64,15 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--cyan);outline-o
 /* detail */
 #detail{display:none}
 #detail.show{display:block;animation:enter .35s ease forwards}
-.hero{position:relative;height:220px;display:grid;place-items:center;margin-top:8px}
+.hero{position:relative;height:220px;display:flex;justify-content:center;align-items:center;margin-top:8px}
+.hero .one{position:relative;z-index:1;width:62%;height:100%;display:grid;place-items:center;transition:transform .4s}
+.hero.duo .one{width:46%}
+.hero.duo .one:first-child{transform:rotate(-7deg) translateX(8%)}
+.hero.duo .one:last-child{transform:rotate(7deg) translateX(-8%)}
+.hero.duo .one:last-child img,.hero.duo .one:last-child svg{animation-delay:0s,1.4s}
 .hero::before{content:"";position:absolute;width:190px;height:190px;border-radius:50%;background:radial-gradient(circle,var(--glow,rgba(139,92,255,.6)),transparent 68%);filter:blur(10px);animation:pulse 3s ease-in-out infinite}
 .hero::after{content:"";position:absolute;bottom:14px;width:150px;height:14px;border-radius:50%;background:rgba(0,0,0,.7);filter:blur(6px)}
-.hero img,.hero svg{position:relative;z-index:1;max-width:62%;max-height:88%;object-fit:contain;filter:drop-shadow(0 18px 22px rgba(0,0,0,.8));animation:heroIn .55s cubic-bezier(.2,.8,.2,1),hover 4s ease-in-out .6s infinite}
+.hero img,.hero svg{position:relative;z-index:1;max-width:100%;max-height:88%;object-fit:contain;filter:drop-shadow(0 18px 22px rgba(0,0,0,.8));animation:heroIn .55s cubic-bezier(.2,.8,.2,1),hover 4s ease-in-out .6s infinite}
 @keyframes heroIn{from{transform:scale(.88) translateY(12px);opacity:0}}
 @keyframes hover{50%{transform:translateY(-6px)}}
 .d-name{font-size:22px;font-weight:700;letter-spacing:-.3px;padding:6px 4px 0}
@@ -89,7 +94,7 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--cyan);outline-o
 .round:active{transform:scale(.94)}
 .round svg{width:20px;height:20px}
 .round.dim{opacity:.35;pointer-events:none}
-.pill{position:relative;flex:1;height:50px;border-radius:25px;background:var(--card);display:flex;align-items:center;justify-content:center;gap:10px;padding:0 14px;
+.pill{position:relative;flex:1;transition:transform .12s,box-shadow .3s;height:50px;border-radius:25px;background:var(--card);display:flex;align-items:center;justify-content:center;gap:10px;padding:0 14px;
   box-shadow:0 0 22px -6px rgba(139,92,255,.8),0 12px 24px -12px rgba(0,0,0,.9)}
 .pill::before{content:"";position:absolute;inset:0;border-radius:25px;padding:1.5px;background:var(--neon);background-size:200% 100%;animation:flow 4s linear infinite;
   -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude}
@@ -118,6 +123,27 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--cyan);outline-o
 .ov-text b{display:block;font-size:21px;font-weight:700;text-shadow:0 0 16px rgba(34,228,255,.7)}
 .ov-text small{display:block;font-size:13.5px;color:var(--ink-2);margin-top:5px}
 
+/* multi-select */
+.pick-row{display:flex;justify-content:space-between;align-items:center;margin:14px 4px 0;font-size:13px;color:var(--ink-2)}
+.pick-row b{color:var(--cyan);text-shadow:0 0 8px rgba(34,228,255,.6)}
+.pick-row button{font-size:12.5px;color:var(--pink);font-weight:600;opacity:0;pointer-events:none;transition:opacity .2s}
+.pick-row button.on{opacity:1;pointer-events:auto}
+.h-card .check{position:absolute;right:10px;top:10px;width:24px;height:24px;border-radius:50%;border:1.5px solid #3A3460;background:rgba(6,5,13,.6);display:grid;place-items:center;z-index:2;transition:.25s;color:#06050D}
+.h-card .check svg{width:13px;height:13px;opacity:0;transform:scale(.4);transition:.25s}
+.h-card.sel{border-color:var(--cyan);box-shadow:0 0 0 1px var(--cyan),0 0 28px -4px rgba(34,228,255,.7)}
+.h-card.sel .check{background:var(--cyan);border-color:var(--cyan);box-shadow:0 0 12px var(--cyan)}
+.h-card.sel .check svg{opacity:1;transform:none}
+.h-card .num{position:absolute;right:40px;top:12px;font-size:11px;font-weight:700;color:var(--cyan);opacity:0;transition:.25s}
+.h-card.sel .num{opacity:1}
+.h-card.shake{animation:shake .4s}
+@keyframes shake{20%,60%{transform:translateX(-5px)}40%,80%{transform:translateX(5px)}}
+.pill.ready{cursor:pointer;box-shadow:0 0 30px -4px rgba(34,228,255,.9),0 12px 24px -12px rgba(0,0,0,.9)}
+.pill.ready:active{transform:scale(.97)}
+.pill.ready span{color:#fff}
+.toast{position:absolute;left:50%;bottom:84px;transform:translate(-50%,16px);background:var(--card-2);border:1px solid var(--pink);font-size:13px;padding:9px 14px;border-radius:14px;
+  box-shadow:0 0 18px -4px rgba(255,43,214,.7);opacity:0;transition:.3s;z-index:30;pointer-events:none;white-space:nowrap}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+
 @media (prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;animation-iteration-count:1!important}}
 </style>
 </head>
@@ -135,7 +161,10 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--cyan);outline-o
       <input id="q" type="search" placeholder="Search headphones" autocomplete="off">
     </label>
 
-    <section id="list"><div class="grid" id="grid"></div></section>
+    <section id="list">
+      <div class="pick-row"><span>Select up to 2 items · <b id="pickCount">0 / 2</b></span><button id="clearBtn" onclick="clearSel()">Clear</button></div>
+      <div class="grid" id="grid"></div>
+    </section>
 
     <section id="detail">
       <div class="hero" id="hero"></div>
@@ -151,13 +180,15 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--cyan);outline-o
 
   <div class="bottom">
     <button class="round dim" id="backBtn" onclick="back()" aria-label="Back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m15 6-6 6 6 6"/></svg></button>
-    <div class="pill">
+    <div class="pill" id="pill" onclick="goNext()" role="button">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M4 15v-3a8 8 0 0 1 16 0v3"/><rect x="3" y="14" width="4" height="7" rx="2"/><rect x="17" y="14" width="4" height="7" rx="2"/></svg>
-      <span>ELECTRONIC PRODUCT DESIGN</span>
+      <span id="pillText">ELECTRONIC PRODUCT DESIGN</span>
       <span class="eq"><i></i><i></i><i></i></span>
     </div>
     <button class="round" aria-label="More"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg></button>
   </div>
+
+  <div class="toast" id="toast">You can select up to 2 items</div>
 
   <div id="overlay" onclick="closeOverlay()">
     <div class="sticker"><img src="d.png" alt="Delivery" onerror="this.outerHTML='<div class=&quot;fallback&quot;>🚚</div>'"></div>
@@ -177,8 +208,9 @@ var items = [
   {id:5, name:'Gamer Halo RGB',   type:'Gaming',    specs:'7.1 surround · RGB lights · boom mic', feats:['RGB','7.1 surround','Noise‑cancel mic'], badge:'Hot', glow:'rgba(255,43,214,.55)'},
   {id:6, name:'Nova Air Max',     type:'On‑ear',    specs:'Ultra‑light · 210 g · 35 h', feats:['Lightweight','Multipoint','Touch controls'], badge:null, glow:'rgba(139,92,255,.55)'}
 ];
-var current = null;
+var selected = [], view = 'list', toastT;
 var $ = function(id){ return document.getElementById(id); };
+var byId = function(id){ return items.filter(function(h){ return h.id === id; })[0]; };
 
 // Запасний малюнок, якщо hN.png не знайдено
 function hpSVG(){
@@ -194,11 +226,41 @@ function renderGrid(){
   var q = $('q').value.trim().toLowerCase();
   var list = items.filter(function(h){ return (h.name + ' ' + h.type).toLowerCase().indexOf(q) > -1; });
   $('grid').innerHTML = list.length ? list.map(function(h, i){
-    return '<button class="h-card" style="animation-delay:'+(i*60)+'ms;--glow:'+h.glow+'" onclick="openItem('+h.id+')">' +
+    var k = selected.indexOf(h.id);
+    return '<button class="h-card'+(k>-1?' sel':'')+'" id="hc'+h.id+'" style="animation-delay:'+(i*60)+'ms;--glow:'+h.glow+'" onclick="toggleItem('+h.id+')">' +
       (h.badge ? '<span class="badge'+(h.badge==='ANC'?'':' pink')+'">'+h.badge+'</span>' : '') +
+      '<span class="num">'+(k>-1?'#'+(k+1):'')+'</span>' +
+      '<span class="check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-10"/></svg></span>' +
       '<div class="pic">'+hpImg(h)+'</div><b>'+h.name+'</b><small>'+h.type+'</small></button>';
   }).join('') : '<div class="empty">No headphones found</div>';
 }
+
+function toggleItem(id){
+  var k = selected.indexOf(id), card = $('hc'+id);
+  if (k > -1) selected.splice(k, 1);
+  else if (selected.length >= 2){
+    card.classList.remove('shake'); void card.offsetWidth; card.classList.add('shake');
+    showToast(); return;
+  } else selected.push(id);
+  document.querySelectorAll('.h-card').forEach(function(c){
+    var cid = +c.id.slice(2), n = selected.indexOf(cid);
+    c.classList.toggle('sel', n > -1);
+    c.querySelector('.num').textContent = n > -1 ? '#' + (n + 1) : '';
+  });
+  updatePill();
+}
+function clearSel(){ selected = []; renderGrid(); updatePill(); }
+function showToast(){ var t = $('toast'); t.classList.add('show'); clearTimeout(toastT); toastT = setTimeout(function(){ t.classList.remove('show'); }, 1800); }
+
+function updatePill(){
+  var n = selected.length;
+  $('pickCount').textContent = n + ' / 2';
+  $('clearBtn').classList.toggle('on', n > 0 && view === 'list');
+  var ready = view === 'list' && n > 0;
+  $('pill').classList.toggle('ready', ready);
+  $('pillText').textContent = ready ? 'CONTINUE · ' + n + (n === 1 ? ' ITEM' : ' ITEMS') : 'ELECTRONIC PRODUCT DESIGN';
+}
+function goNext(){ if (view === 'list' && selected.length) openDetail(); }
 
 // delivery days with real dates
 (function(){
@@ -210,24 +272,31 @@ function renderGrid(){
   }).join('');
 })();
 
-function openItem(id){
-  current = items.filter(function(h){ return h.id === id; })[0];
+function openDetail(){
+  var sel = selected.map(byId);
   document.querySelectorAll('#days button').forEach(function(b){ b.classList.remove('on'); });
-  $('hero').innerHTML = hpImg(current);
-  $('hero').style.setProperty('--glow', current.glow);
-  $('dName').textContent = current.name;
-  $('dSpecs').textContent = current.type + ' · ' + current.specs;
-  $('dFeats').innerHTML = current.feats.map(function(f){ return '<span>'+f+'</span>'; }).join('');
+  var hero = $('hero');
+  hero.classList.toggle('duo', sel.length === 2);
+  hero.style.setProperty('--glow', sel[0].glow);
+  hero.innerHTML = sel.map(function(h){ return '<div class="one">'+hpImg(h)+'</div>'; }).join('');
+  $('dName').textContent = sel.map(function(h){ return h.name; }).join(' + ');
+  $('dSpecs').textContent = sel.length === 1 ? sel[0].type + ' · ' + sel[0].specs : '2 items · ' + sel.map(function(h){ return h.type; }).join(' + ');
+  var feats = [];
+  sel.forEach(function(h){ h.feats.slice(0, sel.length === 1 ? 3 : 2).forEach(function(f){ if (feats.indexOf(f) < 0) feats.push(f); }); });
+  $('dFeats').innerHTML = feats.map(function(f){ return '<span>'+f+'</span>'; }).join('');
+  view = 'detail';
   $('list').style.display = 'none';
   $('detail').classList.add('show');
   $('backBtn').classList.remove('dim');
   $('scroll').scrollTop = 0;
+  updatePill();
 }
 function back(){
+  view = 'list';
   $('detail').classList.remove('show');
   $('list').style.display = '';
   $('backBtn').classList.add('dim');
-  renderGrid();
+  renderGrid(); updatePill();
 }
 
 $('days').addEventListener('click', function(e){
@@ -238,16 +307,18 @@ $('days').addEventListener('click', function(e){
 });
 
 function showOverlay(day){
-  $('ovText').textContent = current.name + ' · ' + day.dataset.v + ', ' + day.dataset.date;
+  var sel = selected.map(byId);
+  $('ovText').textContent = sel.map(function(h){ return h.name; }).join(' + ') + ' · ' + day.dataset.v + ', ' + day.dataset.date;
   var o = $('overlay'); o.classList.remove('show'); void o.offsetWidth; o.classList.add('show');
 }
 function closeOverlay(){
   $('overlay').classList.remove('show');
+  selected = [];
   back();
 }
 
 $('q').addEventListener('input', function(){ if ($('detail').classList.contains('show')) back(); renderGrid(); });
-renderGrid();
+renderGrid(); updatePill();
 </script>
 </body>
 </html>
